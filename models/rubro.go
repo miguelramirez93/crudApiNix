@@ -1,3 +1,4 @@
+
 package models
 
 import (
@@ -10,7 +11,7 @@ import (
 )
 
 type Rubro struct {
-	Id             int      `orm:"column(id);pk"`
+	Id             int      `pk;orm:"column(id);serial"`
 	Entidad        *Entidad `orm:"column(entidad);rel(fk)"`
 	Codigo         string   `orm:"column(codigo);null"`
 	Vigencia       float64  `orm:"column(vigencia)"`
@@ -99,7 +100,7 @@ func GetAllRubro(query map[string]string, fields []string, sortby []string, orde
 	}
 
 	var l []Rubro
-	qs = qs.OrderBy(sortFields...)
+	qs = qs.OrderBy(sortFields...).RelatedSel()
 	if _, err := qs.Limit(limit, offset).All(&l, fields...); err == nil {
 		if len(fields) == 0 {
 			for _, v := range l {
