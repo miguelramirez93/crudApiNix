@@ -11,7 +11,7 @@ import (
 )
 
 type Rubro struct {
-	Id             int      `pk;orm:"column(id);serial"`
+	Id             int64      `pk;orm:"column(id);serial"`
 	Entidad        *Entidad `orm:"column(entidad);rel(fk)"`
 	Codigo         string   `orm:"column(codigo);null"`
 	Vigencia       float64  `orm:"column(vigencia)"`
@@ -33,13 +33,19 @@ func init() {
 // last inserted Id on success.
 func AddRubro(m *Rubro) (id int64, err error) {
 	o := orm.NewOrm()
+	o.Begin()
 	id, err = o.Insert(m)
+	if err != nil {
+    err = o.Rollback()
+} else {
+    err = o.Commit()
+}
 	return
 }
 
 // GetRubroById retrieves Rubro by Id. Returns error if
 // Id doesn't exist
-func GetRubroById(id int) (v *Rubro, err error) {
+func GetRubroById(id int64) (v *Rubro, err error) {
 	o := orm.NewOrm()
 	v = &Rubro{Id: id}
 	if err = o.Read(v); err == nil {
@@ -139,7 +145,7 @@ func UpdateRubroById(m *Rubro) (err error) {
 
 // DeleteRubro deletes Rubro by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteRubro(id int) (err error) {
+func DeleteRubro(id int64) (err error) {
 	o := orm.NewOrm()
 	v := Rubro{Id: id}
 	// ascertain id exists in the database

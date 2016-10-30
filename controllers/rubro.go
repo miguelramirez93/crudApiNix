@@ -54,7 +54,7 @@ func (c *RubroController) Post() {
 // @router /:id [get]
 func (c *RubroController) GetOne() {
 	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.Atoi(idStr)
+	id, _ := strconv.ParseInt(idStr, 10, 64)
 	v, err := models.GetRubroById(id)
 	if err != nil {
 		c.Data["json"] = err.Error()
@@ -135,7 +135,7 @@ func (c *RubroController) GetAll() {
 // @router /:id [put]
 func (c *RubroController) Put() {
 	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.Atoi(idStr)
+	id, _ := strconv.ParseInt(idStr, 10, 64)
 	v := models.Rubro{Id: id}
 	if err := json.Unmarshal(c.Ctx.Input.RequestBody, &v); err == nil {
 		if err := models.UpdateRubroById(&v); err == nil {
@@ -157,7 +157,7 @@ func (c *RubroController) Put() {
 // @router /:id [delete]
 func (c *RubroController) Delete() {
 	idStr := c.Ctx.Input.Param(":id")
-	id, _ := strconv.Atoi(idStr)
+	id, _ := strconv.ParseInt(idStr, 10, 64)
 	if err := models.DeleteRubro(id); err == nil {
 		c.Data["json"] = "OK"
 	} else {

@@ -10,7 +10,7 @@ import (
 )
 
 type RubroRubro struct {
-	Id         int    `pk;orm:"column(id)"`
+	Id         int64    `pk;orm:"column(id)"`
 	RubroPadre *Rubro `orm:"column(rubro_padre);rel(fk)"`
 	RubroHijo  *Rubro `orm:"column(rubro_hijo);rel(fk)"`
 }
@@ -27,13 +27,21 @@ func init() {
 // last inserted Id on success.
 func AddRubroRubro(m *RubroRubro) (id int64, err error) {
 	o := orm.NewOrm()
+	o.Begin()
+	id_hijo, err := o.Insert(m.RubroHijo)
+	m.RubroHijo.Id= id_hijo
 	id, err = o.Insert(m)
+	if err != nil {
+    err = o.Rollback()
+} else {
+    err = o.Commit()
+}
 	return
 }
 
 // GetRubroRubroById retrieves RubroRubro by Id. Returns error if
 // Id doesn't exist
-func GetRubroRubroById(id int) (v *RubroRubro, err error) {
+func GetRubroRubroById(id int64) (v *RubroRubro, err error) {
 	o := orm.NewOrm()
 	v = &RubroRubro{Id: id}
 	if err = o.Read(v); err == nil {
@@ -133,7 +141,7 @@ func UpdateRubroRubroById(m *RubroRubro) (err error) {
 
 // DeleteRubroRubro deletes RubroRubro by Id and returns error if
 // the record to be deleted doesn't exist
-func DeleteRubroRubro(id int) (err error) {
+func DeleteRubroRubro(id int64) (err error) {
 	o := orm.NewOrm()
 	v := RubroRubro{Id: id}
 	// ascertain id exists in the database
